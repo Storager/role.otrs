@@ -35,8 +35,8 @@
 
 - name: download otrs to temp folder
   get_url:  
-    url: "http://ftp.otrs.org/pub/otrs/otrs-{{ otrs_version }}.tar.gz"
-    dest: /tmp/otrs.tar.gz
+    url: "http://ftp.otrs.org/pub/otrs/otrs-{{otrs_version}}.tar.gz"
+    dest: "/tmp/{{otrs_version}}.tar.gz"
 
 - name: create otrs user
   user:
@@ -46,7 +46,7 @@
 
 - name: untar otrs
   unarchive:
-    src: /tmp/otrs.tar.gz
+    src: "/tmp/{{otrs_version}}.tar.gz"
     dest: /tmp
     copy: no
 
