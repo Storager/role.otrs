@@ -1,0 +1,75 @@
+---
+- name: install otrs requirements
+  apt:
+    pkg: "{{item}}"
+    state: installed
+    update_cache: true
+  with_items:  
+    - apache2
+    - libapache2-mod-perl2
+    - libarchive-zip-perl
+    - libcrypt-eksblowfish-perl
+    - libcrypt-ssleay-perl
+    - libencode-hanextra-perl
+    - libjson-xs-perl
+    - libmail-imapclient-perl
+    - libio-socket-ssl-perl
+    - libnet-dns-perl
+    - libnet-ldap-perl
+    - libtemplate-perl
+    - libtemplate-perl
+    - libyaml-libyaml-perl
+    - libdbd-odbc-perl
+    - libdbd-pg-perl
+    - libauthen-ntlm-perl
+    - libapache2-mod-perl2
+    - libtext-csv-xs-perl
+    - libxml-libxml-perl
+    - libxml-libxslt-perl
+    - libxml-parser-perl
+    - libdbd-mysql-perl
+    - libgd-gd2-perl
+    - libgd-text-perl
+    - libgd-graph-perl
+    - perl
+
+- name: download otrs to temp folder
+  get_url:  
+    url: "http://ftp.otrs.org/pub/otrs/otrs-{{ otrs_version }}.tar.gz"
+    dest: /tmp/otrs.tar.gz
+
+- name: create otrs user
+  user:
+    name: otrs
+    group: www-data
+    home: '/opt/otrs'
+
+- name: untar otrs
+  unarchive:
+    src: /tmp/otrs.tar.gz
+    dest: /tmp
+    copy: no
+
+- name: copy content
+  shell: "mv /tmp/otrs-{{otrs_version}}/* /opt/otrs" 
+
+- name: copy defaults
+  shell: "cp /opt/otrs/Kernel/Config.pm.dist /opt/otrs/Kernel/Config.pm"
+  
+- name: fix permissions in file server 
+  shell: "perl /opt/otrs/bin/otrs.SetPermissions.pl --web-group=www-data"
+
+- name: create config symlink
+  file:
+    src: /opt/otrs/scripts/apache2-httpd.include.conf
+    dest: /etc/apache2/conf-enabled/apache2-httpd.include.conf
+    state: link    
+- name: restart apache
+  service:
+    name: apache2
+    state: restarted
+  tags:
+    - test
+
+    
+  
