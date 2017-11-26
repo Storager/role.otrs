@@ -4,7 +4,7 @@
     pkg: "{{item}}"
     state: installed
     update_cache: true
-  with_items:  
+  with_items:
     - apache2
     - libapache2-mod-perl2
     - libarchive-zip-perl
@@ -34,7 +34,7 @@
     - perl
 
 - name: download otrs to temp folder
-  get_url:  
+  get_url:
     url: "http://ftp.otrs.org/pub/otrs/otrs-{{otrs_version}}.tar.gz"
     dest: "/tmp/{{otrs_version}}.tar.gz"
 
@@ -51,25 +51,20 @@
     copy: no
 
 - name: copy content
-  shell: "mv /tmp/otrs-{{otrs_version}}/* /opt/otrs" 
+  shell: "mv /tmp/otrs-{{otrs_version}}/* /opt/otrs"
 
 - name: copy defaults
   shell: "cp /opt/otrs/Kernel/Config.pm.dist /opt/otrs/Kernel/Config.pm"
-  
-- name: fix permissions in file server 
+
+- name: fix permissions in file server
   shell: "perl /opt/otrs/bin/otrs.SetPermissions.pl --web-group=www-data"
 
 - name: create config symlink
   file:
     src: /opt/otrs/scripts/apache2-httpd.include.conf
     dest: /etc/apache2/conf-enabled/apache2-httpd.include.conf
-    state: link    
+    state: link
 - name: restart apache
   service:
     name: apache2
     state: restarted
-  tags:
-    - test
-
-    
-  
